@@ -53,19 +53,20 @@ async function seed() {
   `;
   console.log(`  ✓ Demo church: ${church.name} (${church.slug})`);
 
-  // ── Demo admin user (password: "password123" — bcrypt-style placeholder) ──
+  // ── Demo admin user (password: "password123") ──
   console.log("  Inserting demo admin user...");
   const [user] = await sql`
     INSERT INTO users (church_id, email, password_hash, name, role)
     VALUES (
       ${church.id},
       'admin@gracefellowship.example.com',
-      '$2b$10$placeholder.hash.for.demo.purposes.only',
+      '$2b$10$Acjub5bNDVtXlmWzIjy5jepaM1QbSYS1VP9lWCUPv2Ho5IhpghN8K',
       'Pastor John Smith',
       'admin'
     )
     ON CONFLICT (email) DO UPDATE SET
       name = EXCLUDED.name,
+      password_hash = EXCLUDED.password_hash,
       updated_at = now()
     RETURNING id, email, name, role
   `;
