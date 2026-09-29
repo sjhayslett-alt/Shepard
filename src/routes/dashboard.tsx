@@ -11,7 +11,7 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
-  const { user } = Route.useLoaderData() as { user: SessionUser };
+  const { user } = Route.useRouteContext() as { user: SessionUser };
   const router = useRouter();
   const routerState = useRouterState();
   

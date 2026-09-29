@@ -23,7 +23,7 @@ export const Route = createFileRoute("/dashboard/budget")({
 });
 
 function BudgetPage() {
-  const { user } = Route.useLoaderData() as { user: SessionUser };
+  const { user } = Route.useRouteContext() as { user: SessionUser };
   const router = useRouter();
 
   const [budgets, setBudgets] = useState<Budget[]>([]);

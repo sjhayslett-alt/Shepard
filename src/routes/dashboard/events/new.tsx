@@ -13,7 +13,7 @@ export const Route = createFileRoute("/dashboard/events/new")({
 });
 
 function CreateEventPage() {
-  const { user } = Route.useLoaderData() as { user: SessionUser };
+  const { user } = Route.useRouteContext() as { user: SessionUser };
   const router = useRouter();
 
   const [title, setTitle] = useState("");

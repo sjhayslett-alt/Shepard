@@ -26,7 +26,7 @@ export const Route = createFileRoute("/dashboard/events/$eventId")({
 });
 
 function EventDetailPage() {
-  const { user } = Route.useLoaderData() as { user: SessionUser };
+  const { user } = Route.useRouteContext() as { user: SessionUser };
   const router = useRouter();
   const { eventId } = Route.useParams();
   const [event, setEvent] = useState<Event | null>(null);
