@@ -96,7 +96,7 @@ function TimelineTool({ eventId }: { eventId: string }) {
     setLoading(true);
     setError("");
     try {
-      const result = await generateTimeline({ eventId });
+      const result = await generateTimeline({ data: { eventId } });
       setTimeline(result);
     } catch (err: any) {
       setError(err.message || "Failed to generate timeline");
@@ -185,7 +185,7 @@ function ChecklistTool({ eventId }: { eventId: string }) {
     setLoading(true);
     setError("");
     try {
-      const result = await generateChecklist({ eventId });
+      const result = await generateChecklist({ data: { eventId } });
       setChecklist(result);
       setChecked({});
     } catch (err: any) {
@@ -326,7 +326,7 @@ function BudgetTool({ eventId }: { eventId: string }) {
     setLoading(true);
     setError("");
     try {
-      const result = await generateBudget({ eventId, totalBudget: total });
+      const result = await generateBudget({ data: { eventId, totalBudget: total } });
       setBudget(result);
       setCategories(result.categories);
     } catch (err: any) {
@@ -509,7 +509,7 @@ function VolunteerTool({ eventId }: { eventId: string }) {
     setLoading(true);
     setError("");
     try {
-      const r = await generateVolunteerAssignments({ eventId });
+      const r = await generateVolunteerAssignments({ data: { eventId } });
       setResult(r);
     } catch (err: any) {
       setError(err.message || "Failed to generate volunteer assignments");
@@ -615,7 +615,7 @@ function ShoppingListTool({ eventId }: { eventId: string }) {
     setLoading(true);
     setError("");
     try {
-      const r = await generateShoppingList({ eventId });
+      const r = await generateShoppingList({ data: { eventId } });
       setList(r);
       setChecked({});
     } catch (err: any) {
@@ -735,7 +735,7 @@ function RiskTool({ eventId }: { eventId: string }) {
     setLoading(true);
     setError("");
     try {
-      const r = await generateRiskPlan({ eventId });
+      const r = await generateRiskPlan({ data: { eventId } });
       setResult(r);
     } catch (err: any) {
       setError(err.message || "Failed to generate risk plan");
@@ -873,7 +873,7 @@ function SetupBreakdownTool({ eventId }: { eventId: string }) {
     setLoading(true);
     setError("");
     try {
-      const r = await generateSetupBreakdown({ eventId });
+      const r = await generateSetupBreakdown({ data: { eventId } });
       setResult(r);
       setAssignees({});
     } catch (err: any) {
@@ -1064,7 +1064,7 @@ function ContentTool({ eventId }: { eventId: string }) {
     setLoading(true);
     setError("");
     try {
-      const r = await generateContent({ eventId });
+      const r = await generateContent({ data: { eventId } });
       setResult(r);
       setActiveTab("facebook");
     } catch (err: any) {

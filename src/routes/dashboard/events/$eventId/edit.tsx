@@ -44,7 +44,7 @@ function EditEventPage() {
     const fetchEvent = async () => {
       setLoading(true);
       try {
-        const result = await getEvent({ eventId });
+        const result = await getEvent({ data: { eventId } });
         setOrigEvent(result);
         setTitle(result.title);
         setDescription(result.description || "");
@@ -93,9 +93,11 @@ function EditEventPage() {
       const startDateTime = new Date(`${startDate}T${startTime}`).toISOString();
       const endDateTime = new Date(`${endDate}T${endTime}`).toISOString();
       const result = await updateEvent({
-        eventId, title, description, event_type: eventType,
-        start_date: startDateTime, end_date: endDateTime,
-        location: location || undefined, status,
+        data: {
+          eventId, title, description, event_type: eventType,
+          start_date: startDateTime, end_date: endDateTime,
+          location: location || undefined, status,
+        },
       });
       if (!result.success) {
         setErrors(result.errors || {});

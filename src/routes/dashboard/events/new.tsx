@@ -66,13 +66,15 @@ function CreateEventPage() {
       const endDateTime = new Date(`${endDate}T${endTime}`).toISOString();
 
       const result = await createEvent({
-        title,
-        description,
-        event_type: eventType,
-        start_date: startDateTime,
-        end_date: endDateTime,
-        location: location || undefined,
-        status,
+        data: {
+          title,
+          description,
+          event_type: eventType,
+          start_date: startDateTime,
+          end_date: endDateTime,
+          location: location || undefined,
+          status,
+        },
       });
 
       if (!result.success) {

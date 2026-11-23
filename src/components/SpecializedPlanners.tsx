@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { PLANNER_KEYS, getPlanner, type PlannerDefinition } from "~/specialized-planners";
+import { PLANNERS, PLANNER_KEYS, getPlanner, type PlannerDefinition } from "~/specialized-planners";
 
 const CATEGORY_ICONS: Record<string, string> = {
   Setup: "🧩",

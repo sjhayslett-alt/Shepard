@@ -360,7 +360,7 @@ export const generatePromotion = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { user } = await getAuthState();
     if (!user) throw new Error("Unauthorized");
-    const event = await getEvent({ eventId: data.eventId });
+    const event = await getEvent({ data: { eventId: data.eventId } });
     return buildPromotion(event);
   });
 
@@ -373,6 +373,6 @@ export const generateFollowUp = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { user } = await getAuthState();
     if (!user) throw new Error("Unauthorized");
-    const event = await getEvent({ eventId: data.eventId });
+    const event = await getEvent({ data: { eventId: data.eventId } });
     return buildFollowUp(event);
   });

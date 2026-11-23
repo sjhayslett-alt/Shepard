@@ -74,7 +74,7 @@ function PromotionTool({ eventId }: Props) {
 
   const handleGenerate = async () => {
     setLoading(true);
-    const result = await generatePromotion({ eventId });
+    const result = await generatePromotion({ data: { eventId } });
     setData(result);
     setLoading(false);
   };
@@ -237,7 +237,7 @@ function FollowUpTool({ eventId }: Props) {
 
   const handleGenerate = async () => {
     setLoading(true);
-    const result = await generateFollowUp({ eventId });
+    const result = await generateFollowUp({ data: { eventId } });
     setData(result);
     setLoading(false);
   };
