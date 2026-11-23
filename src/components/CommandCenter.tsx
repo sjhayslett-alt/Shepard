@@ -350,7 +350,7 @@ export function CommandCenterPanel({ eventId }: { eventId: string }) {
     setLoading(true);
     setError(null);
     try {
-      const result = await getCommandCenter({ eventId });
+      const result = await getCommandCenter({ data: { eventId } });
       setState(result);
       // Initialize task map from server state
       const map: Record<string, TaskStatus> = {};

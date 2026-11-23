@@ -105,9 +105,11 @@ function BudgetPage() {
     setSavedMsg("");
     try {
       const result = await saveBudget({
-        name: budgetName,
-        total_amount: total,
-        allocations,
+        data: {
+          name: budgetName,
+          total_amount: total,
+          allocations,
+        },
       });
       if (result.success) {
         setSaveSuccess(true);
@@ -125,7 +127,7 @@ function BudgetPage() {
   const handleDeleteBudget = async (b: Budget) => {
     if (!confirm(`Delete "${b.name}"?`)) return;
     try {
-      await deleteBudget({ budgetId: b.id });
+      await deleteBudget({ data: { budgetId: b.id } });
       await fetchBudgets();
     } catch (err: any) {
       alert(err.message || "Delete failed");

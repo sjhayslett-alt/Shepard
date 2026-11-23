@@ -39,7 +39,7 @@ function EventDetailPage() {
       setLoading(true);
       setError("");
       try {
-        const result = await getEvent({ eventId });
+        const result = await getEvent({ data: { eventId } });
         setEvent(result);
       } catch (err: any) {
         setError(err.message || "Event not found");
@@ -61,7 +61,7 @@ function EventDetailPage() {
     if (!confirm(`Delete "${event.title}"? This cannot be undone.`)) return;
     setDeleting(true);
     try {
-      await deleteEvent({ eventId });
+      await deleteEvent({ data: { eventId } });
       router.navigate({ to: "/dashboard/events" });
     } catch (err: any) {
       alert(err.message || "Failed to delete event");

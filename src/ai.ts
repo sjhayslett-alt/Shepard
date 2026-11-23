@@ -420,7 +420,7 @@ export const generateTimeline = createServerFn({ method: "POST" })
     const { user } = await getAuthState();
     if (!user) throw new Error("Unauthorized");
 
-    const event = await getEvent({ eventId: data.eventId });
+    const event = await getEvent({ data: { eventId: data.eventId } });
     return ruleBasedTimeline(event);
   });
 
@@ -434,7 +434,7 @@ export const generateChecklist = createServerFn({ method: "POST" })
     const { user } = await getAuthState();
     if (!user) throw new Error("Unauthorized");
 
-    const event = await getEvent({ eventId: data.eventId });
+    const event = await getEvent({ data: { eventId: data.eventId } });
     return ruleBasedChecklist(event);
   });
 
@@ -449,7 +449,7 @@ export const generateBudget = createServerFn({ method: "POST" })
     const { user } = await getAuthState();
     if (!user) throw new Error("Unauthorized");
 
-    const event = await getEvent({ eventId: data.eventId });
+    const event = await getEvent({ data: { eventId: data.eventId } });
     return ruleBasedBudget(event, data.totalBudget);
   });
 
@@ -553,7 +553,7 @@ export const generateVolunteerAssignments = createServerFn({ method: "POST" })
     const { user } = await getAuthState();
     if (!user) throw new Error("Unauthorized");
 
-    const event = await getEvent({ eventId: data.eventId });
+    const event = await getEvent({ data: { eventId: data.eventId } });
     const et = event.event_type as EventType;
     const neededRoles = EVENT_TYPE_ROLES[et] || EVENT_TYPE_ROLES.other;
 
@@ -873,7 +873,7 @@ export const generateShoppingList = createServerFn({ method: "POST" })
     const { user } = await getAuthState();
     if (!user) throw new Error("Unauthorized");
 
-    const event = await getEvent({ eventId: data.eventId });
+    const event = await getEvent({ data: { eventId: data.eventId } });
     const et = event.event_type as EventType;
     const template = SHOPPING_TEMPLATES[et] || SHOPPING_TEMPLATES.other;
 
@@ -983,7 +983,7 @@ export const generateRiskPlan = createServerFn({ method: "POST" })
     const { user } = await getAuthState();
     if (!user) throw new Error("Unauthorized");
 
-    const event = await getEvent({ eventId: data.eventId });
+    const event = await getEvent({ data: { eventId: data.eventId } });
     const et = event.event_type as EventType;
     const template = RISK_TEMPLATES[et] || RISK_TEMPLATES.other;
     const rainPlan = RAIN_PLANS[et] || null;
@@ -1249,7 +1249,7 @@ export const generateContent = createServerFn({ method: "POST" })
     const { user } = await getAuthState();
     if (!user) throw new Error("Unauthorized");
 
-    const event = await getEvent({ eventId: data.eventId });
+    const event = await getEvent({ data: { eventId: data.eventId } });
     const et = event.event_type as EventType;
     const { dateStr, timeStr } = formatEventDateTime(event);
     const tone = CONTENT_TONES[et] || CONTENT_TONES.other;
@@ -1457,7 +1457,7 @@ export const generateSetupBreakdown = createServerFn({ method: "POST" })
     const { user } = await getAuthState();
     if (!user) throw new Error("Unauthorized");
 
-    const event = await getEvent({ eventId: data.eventId });
+    const event = await getEvent({ data: { eventId: data.eventId } });
     const et = event.event_type as EventType;
     const setupTemplate = SETUP_TEMPLATES[et] || SETUP_TEMPLATES.other;
     const breakdownTemplate = BREAKDOWN_TEMPLATES[et] || BREAKDOWN_TEMPLATES.other;

@@ -151,7 +151,7 @@ function VolunteersPage() {
     setError("");
     try {
       const [volData, roleData] = await Promise.all([
-        getVolunteers({ skill: filterSkill || undefined }),
+        getVolunteers({ data: { skill: filterSkill || undefined } }),
         getVolunteerRoles(),
       ]);
       setVolunteers(volData);
@@ -203,13 +203,15 @@ function VolunteersPage() {
     try {
       if (editingVolunteer) {
         const result = await updateVolunteer({
-          volunteerId: editingVolunteer.id,
-          name: formName,
-          email: formEmail || undefined,
-          phone: formPhone || undefined,
-          skills: formSkills,
-          availability: formAvailability || undefined,
-          notes: formNotes || undefined,
+          data: {
+            volunteerId: editingVolunteer.id,
+            name: formName,
+            email: formEmail || undefined,
+            phone: formPhone || undefined,
+            skills: formSkills,
+            availability: formAvailability || undefined,
+            notes: formNotes || undefined,
+          },
         });
         if (!result.success) {
           setFormErrors(result.errors || {});
@@ -218,12 +220,14 @@ function VolunteersPage() {
         }
       } else {
         const result = await createVolunteer({
-          name: formName,
-          email: formEmail || undefined,
-          phone: formPhone || undefined,
-          skills: formSkills,
-          availability: formAvailability || undefined,
-          notes: formNotes || undefined,
+          data: {
+            name: formName,
+            email: formEmail || undefined,
+            phone: formPhone || undefined,
+            skills: formSkills,
+            availability: formAvailability || undefined,
+            notes: formNotes || undefined,
+          },
         });
         if (!result.success) {
           setFormErrors(result.errors || {});
@@ -244,7 +248,7 @@ function VolunteersPage() {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
-      await deleteVolunteer({ volunteerId: deleteTarget.id });
+      await deleteVolunteer({ data: { volunteerId: deleteTarget.id } });
       setDeleteTarget(null);
       await fetchData();
     } catch (err: any) {
