@@ -1,6 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { EventType } from "~/events";
 import { PromoFollowUpPanel } from "~/components/PromoFollowUp";
+import {
+  EventPlansProvider,
+  useSavedPlan,
+  useSavePlan,
+} from "~/components/EventPlans";
 import {
   generateTimeline,
   generateChecklist,
@@ -92,18 +97,25 @@ function TimelineTool({ eventId }: { eventId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const saved = useSavedPlan<TimelineResult>("timeline");
+  const savePlan = useSavePlan();
+  useEffect(() => {
+    if (saved && !timeline) setTimeline(saved);
+  }, [saved]);
+
   const loadTimeline = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
       const result = await generateTimeline({ data: { eventId } });
       setTimeline(result);
+      savePlan("timeline", result);
     } catch (err: any) {
       setError(err.message || "Failed to generate timeline");
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, savePlan]);
 
   return (
     <CollapsibleSection
@@ -181,6 +193,18 @@ function ChecklistTool({ eventId }: { eventId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const saved = useSavedPlan<{
+    checklist: ChecklistResult;
+    checked: Record<string, boolean>;
+  }>("checklist");
+  const savePlan = useSavePlan();
+  useEffect(() => {
+    if (saved?.checklist && !checklist) {
+      setChecklist(saved.checklist);
+      setChecked(saved.checked ?? {});
+    }
+  }, [saved]);
+
   const loadChecklist = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -188,15 +212,18 @@ function ChecklistTool({ eventId }: { eventId: string }) {
       const result = await generateChecklist({ data: { eventId } });
       setChecklist(result);
       setChecked({});
+      savePlan("checklist", { checklist: result, checked: {} });
     } catch (err: any) {
       setError(err.message || "Failed to generate checklist");
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, savePlan]);
 
   const toggleItem = (id: string) => {
-    setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
+    const next = { ...checked, [id]: !checked[id] };
+    setChecked(next);
+    if (checklist) savePlan("checklist", { checklist, checked: next });
   };
 
   const totalItems = checklist
@@ -322,6 +349,20 @@ function BudgetTool({ eventId }: { eventId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const saved = useSavedPlan<{
+    budget: BudgetResult;
+    categories: BudgetCategory[];
+    totalBudgetInput: string;
+  }>("budget");
+  const savePlan = useSavePlan();
+  useEffect(() => {
+    if (saved?.budget && !budget) {
+      setBudget(saved.budget);
+      setCategories(saved.categories ?? saved.budget.categories);
+      if (saved.totalBudgetInput) setTotalBudgetInput(saved.totalBudgetInput);
+    }
+  }, [saved]);
+
   const loadBudget = useCallback(async (total: number) => {
     setLoading(true);
     setError("");
@@ -329,12 +370,17 @@ function BudgetTool({ eventId }: { eventId: string }) {
       const result = await generateBudget({ data: { eventId, totalBudget: total } });
       setBudget(result);
       setCategories(result.categories);
+      savePlan("budget", {
+        budget: result,
+        categories: result.categories,
+        totalBudgetInput: String(total),
+      });
     } catch (err: any) {
       setError(err.message || "Failed to generate budget");
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, savePlan]);
 
   const handleGenerate = () => {
     const total = parseFloat(totalBudgetInput);
@@ -358,6 +404,7 @@ function BudgetTool({ eventId }: { eventId: string }) {
     });
 
     setCategories(updated);
+    savePlan("budget", { budget, categories: updated, totalBudgetInput });
   };
 
   const totalAllocated = categories ? categories.reduce((sum, c) => sum + c.amount, 0) : 0;
@@ -505,18 +552,25 @@ function VolunteerTool({ eventId }: { eventId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const saved = useSavedPlan<VolunteerAssignmentResult>("volunteers");
+  const savePlan = useSavePlan();
+  useEffect(() => {
+    if (saved && !result) setResult(saved);
+  }, [saved]);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
       const r = await generateVolunteerAssignments({ data: { eventId } });
       setResult(r);
+      savePlan("volunteers", r);
     } catch (err: any) {
       setError(err.message || "Failed to generate volunteer assignments");
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, savePlan]);
 
   const roleLabels: Record<string, string> = {
     greeter: "Greeter",
@@ -611,6 +665,18 @@ function ShoppingListTool({ eventId }: { eventId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const saved = useSavedPlan<{
+    list: ShoppingListResult;
+    checked: Record<string, boolean>;
+  }>("shopping_list");
+  const savePlan = useSavePlan();
+  useEffect(() => {
+    if (saved?.list && !list) {
+      setList(saved.list);
+      setChecked(saved.checked ?? {});
+    }
+  }, [saved]);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -618,14 +684,19 @@ function ShoppingListTool({ eventId }: { eventId: string }) {
       const r = await generateShoppingList({ data: { eventId } });
       setList(r);
       setChecked({});
+      savePlan("shopping_list", { list: r, checked: {} });
     } catch (err: any) {
       setError(err.message || "Failed to generate shopping list");
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, savePlan]);
 
-  const toggle = (id: string) => setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
+  const toggle = (id: string) => {
+    const next = { ...checked, [id]: !checked[id] };
+    setChecked(next);
+    if (list) savePlan("shopping_list", { list, checked: next });
+  };
 
   const totalItems = list ? list.categories.reduce((sum, c) => sum + c.items.length, 0) : 0;
   const completed = list ? list.categories.reduce((sum, c) => sum + c.items.filter((it) => checked[it.id]).length, 0) : 0;
@@ -731,18 +802,25 @@ function RiskTool({ eventId }: { eventId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const saved = useSavedPlan<RiskPlanResult>("risk");
+  const savePlan = useSavePlan();
+  useEffect(() => {
+    if (saved && !result) setResult(saved);
+  }, [saved]);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
       const r = await generateRiskPlan({ data: { eventId } });
       setResult(r);
+      savePlan("risk", r);
     } catch (err: any) {
       setError(err.message || "Failed to generate risk plan");
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, savePlan]);
 
   const severityColor = (s: string) => {
     switch (s.toLowerCase()) {
@@ -869,6 +947,18 @@ function SetupBreakdownTool({ eventId }: { eventId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const saved = useSavedPlan<{
+    result: SetupBreakdownResult;
+    assignees: Record<string, string>;
+  }>("setup");
+  const savePlan = useSavePlan();
+  useEffect(() => {
+    if (saved?.result && !result) {
+      setResult(saved.result);
+      setAssignees(saved.assignees ?? {});
+    }
+  }, [saved]);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -876,15 +966,18 @@ function SetupBreakdownTool({ eventId }: { eventId: string }) {
       const r = await generateSetupBreakdown({ data: { eventId } });
       setResult(r);
       setAssignees({});
+      savePlan("setup", { result: r, assignees: {} });
     } catch (err: any) {
       setError(err.message || "Failed to generate setup/breakdown schedule");
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, savePlan]);
 
   const updateAssignee = (id: string, value: string) => {
-    setAssignees((prev) => ({ ...prev, [id]: value }));
+    const next = { ...assignees, [id]: value };
+    setAssignees(next);
+    if (result) savePlan("setup", { result, assignees: next });
   };
 
   return (
@@ -1060,6 +1153,12 @@ function ContentTool({ eventId }: { eventId: string }) {
   const [activeTab, setActiveTab] = useState<ContentTab>("facebook");
   const [copiedLabel, setCopiedLabel] = useState("");
 
+  const saved = useSavedPlan<ContentResult>("content");
+  const savePlan = useSavePlan();
+  useEffect(() => {
+    if (saved && !result) setResult(saved);
+  }, [saved]);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -1067,12 +1166,13 @@ function ContentTool({ eventId }: { eventId: string }) {
       const r = await generateContent({ data: { eventId } });
       setResult(r);
       setActiveTab("facebook");
+      savePlan("content", r);
     } catch (err: any) {
       setError(err.message || "Failed to generate content");
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, savePlan]);
 
   const handleCopy = (text: string, label: string) => {
     copyToClipboard(text);
@@ -1405,19 +1505,21 @@ function ContentTool({ eventId }: { eventId: string }) {
 
 export function AiToolsPanel({ eventId }: { eventId: string }) {
   return (
-    <div className="mt-8 space-y-3">
-      <div className="flex items-center gap-2 mb-4">
-        <SparkleIcon />
-        <h3 className="text-lg font-bold text-teal-700">AI Tools</h3>
+    <EventPlansProvider eventId={eventId}>
+      <div className="mt-8 space-y-3">
+        <div className="flex items-center gap-2 mb-4">
+          <SparkleIcon />
+          <h3 className="text-lg font-bold text-teal-700">AI Tools</h3>
+        </div>
+        <TimelineTool eventId={eventId} />
+        <ChecklistTool eventId={eventId} />
+        <BudgetTool eventId={eventId} />
+        <VolunteerTool eventId={eventId} />
+        <ShoppingListTool eventId={eventId} />
+        <RiskTool eventId={eventId} />
+        <SetupBreakdownTool eventId={eventId} />
+        <PromoFollowUpPanel eventId={eventId} />
       </div>
-      <TimelineTool eventId={eventId} />
-      <ChecklistTool eventId={eventId} />
-      <BudgetTool eventId={eventId} />
-      <VolunteerTool eventId={eventId} />
-      <ShoppingListTool eventId={eventId} />
-      <RiskTool eventId={eventId} />
-      <SetupBreakdownTool eventId={eventId} />
-      <PromoFollowUpPanel eventId={eventId} />
-    </div>
+    </EventPlansProvider>
   );
 }
