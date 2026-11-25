@@ -183,7 +183,24 @@ async function migrate() {
   `;
   console.log("  ✓ sessions");
 
-  console.log("\nMigration complete — all 11 tables ready.");
+  // 12. event_ai_plans — persisted AI tool output per event
+  await sql`
+    CREATE TABLE IF NOT EXISTS event_ai_plans (
+      event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+      church_id UUID NOT NULL REFERENCES churches(id) ON DELETE CASCADE,
+      kind TEXT NOT NULL,
+      payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      UNIQUE (event_id, kind)
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS event_ai_plans_church_idx
+      ON event_ai_plans (church_id)
+  `;
+  console.log("  ✓ event_ai_plans");
+
+  console.log("\nMigration complete — all 12 tables ready.");
 }
 
 migrate()

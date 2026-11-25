@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   generatePromotion,
   generateFollowUp,
   type PromotionResult,
   type FollowUpResult,
 } from "~/ai-promo";
+import { useSavedPlan, useSavePlan } from "~/components/EventPlans";
 
 interface Props {
   eventId: string;
@@ -72,10 +73,17 @@ function PromotionTool({ eventId }: Props) {
   const [data, setData] = useState<PromotionResult | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const saved = useSavedPlan<PromotionResult>("promotion");
+  const savePlan = useSavePlan();
+  useEffect(() => {
+    if (saved && !data) setData(saved);
+  }, [saved]);
+
   const handleGenerate = async () => {
     setLoading(true);
     const result = await generatePromotion({ data: { eventId } });
     setData(result);
+    savePlan("promotion", result);
     setLoading(false);
   };
 
@@ -235,10 +243,17 @@ function FollowUpTool({ eventId }: Props) {
   const [data, setData] = useState<FollowUpResult | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const saved = useSavedPlan<FollowUpResult>("follow_up");
+  const savePlan = useSavePlan();
+  useEffect(() => {
+    if (saved && !data) setData(saved);
+  }, [saved]);
+
   const handleGenerate = async () => {
     setLoading(true);
     const result = await generateFollowUp({ data: { eventId } });
     setData(result);
+    savePlan("follow_up", result);
     setLoading(false);
   };
 
